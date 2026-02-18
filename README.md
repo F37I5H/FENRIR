@@ -20,7 +20,6 @@ Pure PowerShell scanner that identifies privilege escalation paths across the fu
 - **Single authentication** — Device Code Flow gets both Graph API and Azure Management tokens in one login (supports MFA and Conditional Access)
 - **40-section scan** covering cloud, hybrid, and local attack vectors
 - **Severity classification** — PE (privilege escalation), RED (high risk), LOW (medium), INFO (informational)
-- **Attack path generation** — actionable exploitation chains, not just findings
 - **Visual output** — progress bar, colored findings, box-drawing UI
 - **Optional file report** via `-OutputFile` parameter
 
@@ -144,19 +143,6 @@ A device code prompt will appear — authenticate in your browser once and the s
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```
 
-## Attack Path Generation
-
-FENRIR doesn't just list findings — it chains them into actionable attack paths:
-
-```
-[ATTACK PATH] SeImpersonatePrivilege → GodPotato/PrintSpoofer/JuicyPotatoNG → SYSTEM
-[ATTACK PATH] GPP cpassword → gpp-decrypt / Get-GPPPassword → plaintext credentials
-[ATTACK PATH] DCSync as J-LABS\svc_sync → secretsdump.py / Mimikatz lsadump::dcsync → all NTLM hashes → DA
-[ATTACK PATH] Modify GPO 'Default Domain Policy' → add scheduled task → code exec on linked OUs
-[ATTACK PATH] SSH private key → ssh -i key user@target → lateral movement
-[ATTACK PATH] Enroll 'WebServer' as agent → use agent cert to enroll as DA on another template
-```
-
 ## How It Works
 
 ```
@@ -198,7 +184,6 @@ FENRIR doesn't just list findings — it chains them into actionable attack path
 │ │  ├─ Colored console output                   │     │
 │ │  ├─ Progress bar (0-100%)                    │     │
 │ │  ├─ Finding severity classification          │     │
-│ │  ├─ Attack path chaining                     │     │
 │ │  └─ Optional file report                     │     │
 │ └──────────────────────────────────────────────┘     │
 └──────────────────────────────────────────────────────┘
