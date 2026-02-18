@@ -28,7 +28,7 @@ Pure PowerShell scanner that identifies privilege escalation paths across the fu
 
 ```powershell
 # Run directly from GitHub
-IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/F37I5H/FENRIR/main/fenrir.ps1')
+IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/<user>/<repo>/main/fenrir.ps1')
 
 # Or download and run locally
 .\fenrir.ps1
@@ -157,65 +157,50 @@ FENRIR doesn't just list findings — it chains them into actionable attack path
 [ATTACK PATH] Enroll 'WebServer' as agent → use agent cert to enroll as DA on another template
 ```
 
-## Coverage Comparison
-
-| Category | FENRIR | WinPEAS | ADPEAS | PowerUp | AzureHound |
-|----------|--------|---------|--------|---------|------------|
-| Entra ID (roles, MFA, CA, PIM) | 14 checks | - | 8 | - | 6 |
-| Azure resources (RBAC, VMs, KV) | 8 checks | - | partial | - | partial |
-| ADCS ESC1-8 | all 7 | - | ESC1,8 | - | - |
-| AD (Kerberos, delegation, ACLs) | 12 checks | - | 6 | - | 5 |
-| Local PE (services, DLL, tokens) | 20 checks | 25 | - | 10 | - |
-| Credential harvesting | 10 checks | 8 | - | 2 | - |
-| **IMDS, Azure Arc, Dynamic Groups** | **unique** | - | - | - | - |
-| **Total vectors** | **~50** | ~26 | ~14 | ~10 | ~11 |
-
-FENRIR is the only tool that covers all three layers (cloud + AD + local) in a single script.
-
 ## How It Works
 
 ```
 ┌──────────────────────────────────────────────────────┐
-│                    FENRIR v2.0                        │
+│                    FENRIR v2.0                       │
 ├──────────────────────────────────────────────────────┤
 │                                                      │
-│  ┌─────────┐   Device Code Flow    ┌──────────────┐ │
-│  │ User    │ ──────────────────── │ Entra ID     │ │
-│  │ Browser │   (MFA supported)    │ OAuth2       │ │
-│  └─────────┘                      └──────┬───────┘ │
-│                                          │         │
-│                              ┌───────────┼────┐    │
-│                              ▼           ▼    │    │
-│                    ┌──────────────┐ ┌────────┐│    │
-│                    │ Graph API    │ │ ARM    ││    │
-│                    │ Token        │ │ Token  ││    │
-│                    └──────┬───────┘ └───┬────┘│    │
-│                           │             │     │    │
-│  ┌────────────────────────┼─────────────┼─────┘    │
-│  ▼                        ▼             ▼          │
-│ ┌──────────┐  ┌───────────────┐  ┌────────────┐   │
-│ │ On-Prem  │  │ Graph REST    │  │ Azure      │   │
-│ │ AD/LDAP  │  │ API calls     │  │ Management │   │
-│ │ (ADSI)   │  │ (Sections     │  │ REST API   │   │
-│ │          │  │  1-12,17-18,  │  │ (Sections  │   │
-│ │ Sections │  │  32,35-38)    │  │  13-16,19, │   │
-│ │ 11,24,   │  └───────────────┘  │  33)       │   │
-│ │ 39-40    │                     └────────────┘   │
-│ └──────────┘                                      │
-│                                                    │
-│ ┌──────────────────────────────────────────────┐   │
-│ │ Local Machine (WMI, Registry, ACLs, FS)      │   │
-│ │ Sections 20-22, 25-31, 34                    │   │
-│ └──────────────────────────────────────────────┘   │
-│                                                    │
-│ ┌──────────────────────────────────────────────┐   │
-│ │ Output Engine                                │   │
-│ │  ├─ Colored console output                   │   │
-│ │  ├─ Progress bar (0-100%)                    │   │
-│ │  ├─ Finding severity classification          │   │
-│ │  ├─ Attack path chaining                     │   │
-│ │  └─ Optional file report                     │   │
-│ └──────────────────────────────────────────────┘   │
+│  ┌─────────┐   Device Code Flow   ┌──────────────┐   │
+│  │ User    │ ──────────────────── │ Entra ID     │   │
+│  │ Browser │   (MFA supported)    │ OAuth2       │   │
+│  └─────────┘                      └──────┬───────┘   │
+│                                          │           │
+│                              ┌───────────┼────┐      │
+│                              ▼           ▼    │      │
+│                    ┌──────────────┐ ┌────────┐│      │
+│                    │ Graph API    │ │ ARM    ││      │
+│                    │ Token        │ │ Token  ││      │
+│                    └──────┬───────┘ └───┬────┘│      │
+│                           │             │     │      │
+│  ┌────────────────────────┼─────────────┼─────┘      │
+│  ▼                        ▼             ▼            │
+│ ┌──────────┐  ┌───────────────┐  ┌────────────┐      │
+│ │ On-Prem  │  │ Graph REST    │  │ Azure      │      │
+│ │ AD/LDAP  │  │ API calls     │  │ Management │      │
+│ │ (ADSI)   │  │ (Sections     │  │ REST API   │      │
+│ │          │  │  1-12,17-18,  │  │ (Sections  │      │
+│ │ Sections │  │  32,35-38)    │  │  13-16,19, │      │
+│ │ 11,24,   │  └───────────────┘  │  33)       │      │
+│ │ 39-40    │                     └────────────┘      │
+│ └──────────┘                                         │
+│                                                      │
+│ ┌──────────────────────────────────────────────┐     │
+│ │ Local Machine (WMI, Registry, ACLs, FS)      │     │
+│ │ Sections 20-22, 25-31, 34                    │     │
+│ └──────────────────────────────────────────────┘     │
+│                                                      │
+│ ┌──────────────────────────────────────────────┐     │
+│ │ Output Engine                                │     │
+│ │  ├─ Colored console output                   │     │
+│ │  ├─ Progress bar (0-100%)                    │     │
+│ │  ├─ Finding severity classification          │     │
+│ │  ├─ Attack path chaining                     │     │
+│ │  └─ Optional file report                     │     │
+│ └──────────────────────────────────────────────┘     │
 └──────────────────────────────────────────────────────┘
 ```
 
