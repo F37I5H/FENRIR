@@ -238,6 +238,10 @@ This tool is designed for **authorized security assessments only**:
 
 **Do not** use this tool against environments you don't have explicit permission to test.
 
+## Disclaimer
+
+This tool is provided **as-is**, without any warranty. Use at your own risk. The author takes no responsibility for any damage, data loss, or legal consequences resulting from the use of this tool. You are solely responsible for ensuring you have proper authorization before running it against any environment.
+
 ## License
 
 For authorized security testing and research purposes only.
