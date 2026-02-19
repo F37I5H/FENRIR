@@ -27,7 +27,7 @@ Pure PowerShell scanner that identifies privilege escalation paths across the fu
 
 ```powershell
 # Run directly from GitHub
-IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/<user>/<repo>/main/fenrir.ps1')
+IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/F37I5H/FENRIR/main/fenrir.ps1')
 
 # Or download and run locally
 .\fenrir.ps1
